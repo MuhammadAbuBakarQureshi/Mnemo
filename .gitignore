@@ -1,0 +1,6 @@
+uploads/
+.env
+mnemo-key-pair.pem
+__pycache__/
+*.pyc
+*.pyo
