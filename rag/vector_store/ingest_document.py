@@ -1,9 +1,6 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from backend.app.models.models import Document, DocumentChunk, DocumentEmbedding
 
-# file_type=file.content_type,
-# project_id=project_id,
-# user_id=current_user.user_id,
 
 async def ingest_document(embeddings,
                      file_type: str,
