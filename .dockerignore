@@ -1,0 +1,27 @@
+# Notebooks and experiment artifacts
+rag/*.ipynb
+rag/chunks.txt
+rag/pinecone_vectorstore/
+
+# Git
+.git
+.gitignore
+
+# Python cache/junk
+**/__pycache__/
+**/*.pyc
+**/*.pyo
+
+# Env files - never ship secrets into the image
+.env
+**/.env
+
+# Frontend - not needed in this container
+frontend/
+
+# Editor/OS junk
+.vscode/
+.DS_Store
+
+# Docs
+README.md
