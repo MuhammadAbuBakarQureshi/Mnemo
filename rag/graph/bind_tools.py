@@ -4,15 +4,17 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from rag.vector_store.query_db import make_retrieve_tool
 
 from dotenv import load_dotenv
+import os
 
 load_dotenv()
+
 
 
 try:
 
     def build_llm_with_tools(db: AsyncSession) -> ChatGroq:
 
-        llm_name = "llama-3.3-70b-versatile"
+        llm_name = os.getenv("LLM_NAME")
         llm = ChatGroq(model=llm_name)
 
         retrieve_tool = make_retrieve_tool(db)          # db captured in closure
