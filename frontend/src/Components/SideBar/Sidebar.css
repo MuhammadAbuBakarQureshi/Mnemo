@@ -1,0 +1,469 @@
+/* ─── Sidebar root ──────────────────────────────────────────────────────────── */
+
+.sidebar-root {
+  /* Fixed height — never min-height — so the list scrolls inside, not the page */
+  width: 300px;
+  height: 100vh;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  box-sizing: border-box;
+  overflow: hidden;
+  transition: width 220ms ease, opacity 220ms ease;
+}
+
+.sidebar-root.sidebar-collapsed {
+  width: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.sidebar-root.sidebar-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* ─── Inner layout ──────────────────────────────────────────────────────────── */
+
+.sidebar-inner {
+  /* Fill sidebar-root exactly — no min-height that can escape the clip */
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+/* ─── Topbar ────────────────────────────────────────────────────────────────── */
+
+.sidebar-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  /* 1.25rem top padding — rail button must match this */
+  padding: 1.25rem 1.25rem 1rem;
+  flex-shrink: 0;
+}
+
+.sidebar-title {
+  font-size: 1.1rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--color-ink);
+}
+
+.sidebar-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* ─── Buttons ───────────────────────────────────────────────────────────────── */
+
+.sidebar-action-btn,
+.sidebar-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 0.85rem;
+  border: none;
+  background: transparent;
+  color: var(--color-ink-soft);
+  cursor: pointer;
+  transition: background-color 150ms ease, color 150ms ease;
+}
+
+.sidebar-action-btn:hover,
+.sidebar-toggle-btn:hover {
+  background: rgba(0, 0, 0, 0.06);
+  color: var(--color-ink);
+}
+
+.sidebar-action-btn.open {
+  background: rgba(0, 0, 0, 0.08);
+  color: var(--color-ink);
+}
+
+/* ─── Search ──────────────────────────────────────────────────────────────── */
+
+.sidebar-search-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 1.25rem 0.85rem;
+  padding: 0.6rem 0.75rem;
+  border-radius: 0.9rem;
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid var(--color-border);
+  flex-shrink: 0;
+}
+
+.sidebar-search-icon {
+  flex-shrink: 0;
+  color: var(--color-ink-soft);
+}
+
+.sidebar-search-input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: var(--font-sans);
+  font-size: 0.88rem;
+  color: var(--color-ink);
+}
+
+.sidebar-search-input::placeholder {
+  color: #A89B8C;
+}
+
+.sidebar-search-clear {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  color: var(--color-ink-soft);
+  cursor: pointer;
+  border-radius: 999px;
+  padding: 0;
+  transition: background-color 150ms ease, color 150ms ease;
+}
+
+.sidebar-search-clear:hover {
+  background: rgba(0, 0, 0, 0.08);
+  color: var(--color-ink);
+}
+
+.sidebar-search-empty {
+  margin: 0;
+  padding: 0.75rem 0.5rem;
+  font-size: 0.85rem;
+  color: var(--color-ink-soft);
+  text-align: center;
+}
+
+/* ─── New project button ────────────────────────────────────────────────────── */
+
+.sidebar-new-project {
+  display: flex;
+  width: calc(100% - 1.5rem);
+  margin: 0 0.75rem 1rem;
+  padding: 0.95rem 1rem;
+  border-radius: 1.1rem;
+  background: var(--color-ink);
+  color: var(--color-cream);
+  font-size: 0.96rem;
+  font-weight: 700;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  transition: opacity 160ms ease;
+  box-sizing: border-box;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.sidebar-new-project:hover {
+  opacity: 0.92;
+}
+
+/* ─── Project list — this is the only scrolling zone ───────────────────────── */
+
+.sidebar-list-wrapper {
+  flex: 1;
+  /* min-height: 0 is critical — without it flex children can ignore overflow */
+  min-height: 0;
+  overflow-y: auto;
+  /* overflow-x: visible allows popups to escape horizontally without clipping */
+  overflow-x: visible;
+  padding: 0 0.75rem 1rem;
+  position: relative;
+  /* Create a stacking context so dropdown is above all items */
+  z-index: 0;
+}
+
+.project-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/* ─── Project items ─────────────────────────────────────────────────────────── */
+
+.project-item {
+  position: relative;
+  border-radius: 1.25rem;
+  padding: 1rem;
+  border: 1px solid transparent;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 18px 35px rgba(46, 37, 32, 0.06);
+  cursor: pointer;
+  /* Use box-shadow for hover effect instead of transform to avoid stacking context */
+  transition: border-color 180ms ease, background-color 180ms ease, box-shadow 180ms ease;
+  overflow: visible;
+}
+
+.project-item:hover {
+  border-color: rgba(46, 37, 32, 0.08);
+  /* Enhanced shadow instead of transform */
+  box-shadow: 0 20px 40px rgba(46, 37, 32, 0.1);
+}
+
+.project-item-active {
+  background: #f6f1e8;
+  border-color: rgba(46, 37, 32, 0.12);
+}
+
+.project-item .project-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.project-name {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 0.2rem;
+  color: var(--color-ink);
+}
+
+.project-description {
+  font-size: 0.88rem;
+  color: var(--color-ink-soft);
+  line-height: 1.4;
+}
+
+/* ─── Project menu button & dropdown ────────────────────────────────────────── */
+
+.project-menu-wrapper {
+  position: relative;
+  flex-shrink: 0;
+  /* Ensure menu is above siblings */
+  z-index: 10;
+}
+
+.project-menu-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 0.85rem;
+  border: none;
+  color: var(--color-ink-soft);
+  background: transparent;
+  cursor: pointer;
+  transition: background-color 150ms ease, opacity 150ms ease;
+  opacity: 0;
+  position: relative;
+  z-index: 10;
+}
+
+.project-item:hover .project-menu-btn,
+.project-menu-btn.open {
+  opacity: 1;
+}
+
+.project-menu-btn:hover {
+  background: rgba(0, 0, 0, 0.06);
+  color: var(--color-ink);
+}
+
+.project-menu-dropdown {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  z-index: 999;
+  width: 144px;
+  overflow: hidden;
+  border-radius: 0.75rem;
+  border: 1px solid var(--color-border);
+  background: white;
+  box-shadow: 0 10px 28px rgba(46, 37, 32, 0.12);
+  py: 0.25rem;
+}
+
+/* ─── Chats section ────────────────────────────────────────────────────────── */
+
+.sidebar-chats-section {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.sidebar-chats-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0 0.5rem 0.75rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-ink-soft);
+}
+
+.sidebar-chats-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar-chat-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 0.65rem 0.75rem;
+  border: none;
+  background: rgba(0, 0, 0, 0.02);
+  border-radius: 0.9rem;
+  color: var(--color-ink);
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 150ms ease, color 150ms ease;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sidebar-chat-item:hover {
+  background-color: rgba(0, 0, 0, 0.06);
+  color: var(--color-ink);
+}
+
+.sidebar-chat-title {
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ─── Loading state ────────────────────────────────────────────────────────── */
+
+.sidebar-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1.5rem 1rem;
+  text-align: center;
+  color: var(--color-ink-soft);
+  font-size: 0.85rem;
+}
+
+.sidebar-spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(0, 0, 0, 0.1);
+  border-top-color: var(--color-ink-soft);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ─── Collapsed rail (desktop only) ────────────────────────────────────────── */
+
+.sidebar-rail {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 56px;
+  height: 100vh;
+  flex-shrink: 0;
+  background-color: var(--color-panel);
+  /* Round only the right side to face the main content area */
+  border-radius: 0 1.5rem 1.5rem 0;
+  /* padding-top matches .sidebar-topbar's 1.25rem so the open button sits at
+     the exact same vertical position as the close button when sidebar is open */
+  padding-top: 1.25rem;
+  box-sizing: border-box;
+}
+
+/* Hide the rail on mobile/tablet — AppPage's header button handles that */
+@media (max-width: 980px) {
+  .sidebar-rail {
+    display: none;
+  }
+}
+
+/* ─── Mobile / tablet ───────────────────────────────────────────────────────── */
+
+.sidebar-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.28);
+  opacity: 0;
+  visibility: hidden;
+  display: none;
+  pointer-events: none;
+  transition: opacity 220ms ease, visibility 220ms ease;
+  z-index: 20;
+}
+
+.sidebar-backdrop.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+@media (max-width: 980px) {
+  .sidebar-backdrop {
+    display: block;
+  }
+
+  .sidebar-backdrop.active {
+    pointer-events: auto;
+  }
+
+  .sidebar-root {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: min(92vw, 340px) !important;
+    height: 100vh;
+    transform: translateX(-120%);
+    box-shadow: 24px 0 80px rgba(46, 37, 32, 0.18);
+    z-index: 30;
+    border-radius: 0 1.5rem 1.5rem 0;
+    overflow: hidden;
+    opacity: 1 !important;
+    pointer-events: none;
+    transition: transform 220ms ease;
+  }
+
+  .sidebar-root.sidebar-open {
+    transform: translateX(0);
+    pointer-events: auto;
+  }
+
+  .sidebar-root.sidebar-collapsed {
+    transform: translateX(-120%);
+  }
+
+  .sidebar-action-btn,
+  .sidebar-toggle-btn {
+    width: 36px;
+    height: 36px;
+  }
+}
