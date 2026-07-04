@@ -9,7 +9,7 @@ from backend.app.api.v1.auth import router as auth_router
 from backend.app.api.v1.chats import router as chat_router
 from backend.app.api.v1.documents import router as document_router
 
-app = FastAPI()
+app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
 
 app.include_router(router=project_router, prefix="/project")
 app.include_router(router=user_router, prefix="/user")
