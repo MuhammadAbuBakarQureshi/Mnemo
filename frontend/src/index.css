@@ -1,0 +1,50 @@
+@import "tailwindcss";
+
+/*
+  Design tokens for the app.
+  Defining these inside @theme makes them available both as:
+  - CSS variables, e.g. var(--color-cream)
+  - Tailwind utility classes, e.g. bg-cream, text-ink, border-border
+*/
+@theme {
+  /* Colors */
+  --color-cream: #FBF7EF;
+  --color-panel: #F1E8DB;
+  --color-ink: #2E2520;
+  --color-ink-soft: #6B5F55;
+  --color-border: #E4D7C5;
+  --color-asterisk: #C45B3E;
+
+  /* Radius */
+  --radius-xl: 0.75rem;
+  --radius-2xl: 1rem;
+  --radius-3xl: 1.5rem;
+
+  /* Font */
+  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+/* Base resets / app-wide defaults */
+html, body, #root {
+  height: 100%;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background-color: var(--color-cream);
+  font-family: var(--font-sans);
+  color: var(--color-ink);
+}
+
+/* ─── Hide scrollbars globally while keeping scroll functional ── */
+* {
+  scrollbar-width: none;        /* Firefox */
+  -ms-overflow-style: none;     /* IE / Edge legacy */
+}
+*::-webkit-scrollbar {
+  display: none;                /* Chrome / Safari / new Edge */
+}
