@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { Paperclip, ArrowUp, X, FileText, Loader } from "lucide-react";
 import "./ChatInput.css";
 
-const API_BASE = "http://localhost:8000";
+const BASE_URL = import.meta.env.VITE_BASE_URL
 
 /**
  * ChatInput
@@ -74,7 +74,7 @@ export default function ChatInput({
       formData.append("file", file);
 
       const response = await fetch(
-        `${API_BASE}/chat/upload?project_id=${projectId}`,
+        `${BASE_URL}/chat/upload?project_id=${projectId}`,
         {
           method: "POST",
           body: formData,
