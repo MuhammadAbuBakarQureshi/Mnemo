@@ -32,7 +32,7 @@ import tempfile
 from dotenv import load_dotenv
 
 
-ALLOWED_TYPES = {"application/pdf", "text/plain", "text/markdown"}
+ALLOWED_TYPES = {"application/pdf"}
 MAX_FILE_SIZE = 10 * 1024 * 1024  # 10MB
 
 s3_client = boto3.client("s3", region_name="eu-central-1")
@@ -251,16 +251,3 @@ async def upload_document(
         await session.rollback()
         print(f"Document Upload Error: {e}")
         raise HTTPException(status_code=500, detail="Something went wrong while uploading the document")
-
-
-# prompt_keys = {'role', 'content'}
-
-# prompt = []
-
-# for msg in messages:
-
-#     data = {k : v for k, v in msg.__dict__.items() if k is not "_sa_instance_state"}
-
-#     prompt.append({k : v for k, v in data.items() if k in prompt_keys})
-
-# Rag
