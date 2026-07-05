@@ -2,7 +2,7 @@ import os
 import json
 import asyncio
 
-from langchain_core.messages import HumanMessage, SystemMessage, AIMessage
+from langchain_core.messages import HumanMessage, SystemMessage, AIMessage, ToolMessage
 from langgraph.graph import StateGraph, END
 from langgraph.prebuilt import ToolNode, tools_condition
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -44,36 +44,45 @@ def get_tool_calls(rag_res):
 
     tool_calls = []
 
+    is_tool_called = False
+
     for message in rag_res['messages']:
 
         try:
 
-            if message.content[0] == '[':
+            print(message)
+
+            if isinstance(message, ToolMessage):
 
                 tool_calls.append(message)
+                is_tool_called = True
 
         except Exception as e:
 
             pass
 
+    if is_tool_called:
 
-    retrieve_chunks_metadata = []
+        retrieve_chunks_metadata = []
 
-    for tool_call in tool_calls:
+        for tool_call in tool_calls:
 
-        chunks = json.loads(tool_call.content)
-        
-        for chunk in chunks:
+            chunks = json.loads(tool_call.content)
+            
+            for chunk in chunks:
 
-            retrieve_chunks_metadata.append({
-                "page_number" : chunk["page_number"],
-                "filename": chunk["filename"],
-                "similarity": chunk["similarity"] * 100,
-                "content": chunk["content"]
-            })
+                retrieve_chunks_metadata.append({
+                    "page_number" : chunk["page_number"],
+                    "filename": chunk["filename"],
+                    "similarity": chunk["similarity"] * 100,
+                    "content": chunk["content"]
+                })
 
-    return retrieve_chunks_metadata
+        return retrieve_chunks_metadata
 
+    else:
+
+        return []
 
 def display_response(result):
 
@@ -135,12 +144,7 @@ try:
         
         graph = build_rag_graph(db)
     
-        print(f"\n\n\n\t\t\tMessage: \n\n{messages}\n\n\n")
-        
         messages = to_langchain_messages(messages=messages)
-
-        print(f"\n\n\n\t\t\tMessage: \n\n{messages}\n\n\n")
-       
 
         system_message = SystemMessage(content=(
             f"pass this project_id {project_id} to retrieve_chunks\n\n"
@@ -186,70 +190,3 @@ try:
 except Exception as e:
 
     print(f"Run Rag Error: {e}")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# try:
-
-#     async def rag_loop():
-
-#         messages = []
-
-#         async with AsyncSessionLocal() as db:
-
-#             user_input = input("You: ")
-#             while(user_input != "/bye"):
-                
-#                 messages.append({
-#                     "role": "human",
-#                     "content": user_input
-#                 })
-
-#                 result = await run_rag(project_id= 7, messages=messages, db=db)
-
-#                 messages.append({
-#                     "role": "ai",
-#                     "content": result["messages"][-1].content
-#                 })
-
-#                 display_response(result)
-
-#                 user_input = input("\nYou: ")
-
-# except Exception as e:
-
-#     print(f"Rag Loop Error: {e}")
-
-# def run():
-
-#     asyncio.run(rag_loop())
-
-
-# run()
