@@ -25,33 +25,44 @@ def make_retrieve_tool(db: AsyncSession):
             project_id: Project whose documents should be searched.
             top_k: Number of chunks to retrieve (default 1).
         """
-        query_vector = await get_embeddings_client().aembed_query(query)
-        vector_str = f"[{','.join(str(v) for v in query_vector)}]"
+        try:
+            query_vector = await get_embeddings_client().aembed_query(query)
+            vector_str = f"[{','.join(str(v) for v in query_vector)}]"
 
-        sql = text("""
-            SELECT
-                dc.id          AS chunk_id,
-                dc.content,
-                dc.page_number,
-                dc.chunk_index,
-                d.filename,
-                d.file_path,
-                1 - (de.embedding <=> CAST(:query_vec AS vector)) AS similarity
-            FROM document_embeddings de
-            JOIN document_chunks dc ON dc.id  = de.chunk_id
-            JOIN documents d        ON d.id   = de.document_id
-            WHERE d.project_id = :project_id
-            ORDER BY de.embedding <=> CAST(:query_vec AS vector)
-            LIMIT :top_k
-        """)
+            sql = text("""
+                SELECT
+                    dc.id          AS chunk_id,
+                    dc.content,
+                    dc.page_number,
+                    dc.chunk_index,
+                    d.filename,
+                    d.file_path,
+                    1 - (de.embedding <=> CAST(:query_vec AS vector)) AS similarity
+                FROM document_embeddings de
+                JOIN document_chunks dc ON dc.id  = de.chunk_id
+                JOIN documents d        ON d.id   = de.document_id
+                WHERE d.project_id = :project_id
+                ORDER BY de.embedding <=> CAST(:query_vec AS vector)
+                LIMIT :top_k
+            """)
 
-        result = await db.execute(sql, {
-            "query_vec":  vector_str,
-            "project_id": project_id,
-            "top_k":      top_k,
-        })
+            result = await db.execute(sql, {
+                "query_vec":  vector_str,
+                "project_id": project_id,
+                "top_k":      top_k,
+            })
 
-        rows = result.mappings().all()
-        return [dict(row) for row in rows]
+            rows = result.mappings().all()
+
+            if not rows:
+                return [{"content": "No relevant documents found for this query."}]
+
+            return [dict(row) for row in rows]
+
+            # rows = result.mappings().all()
+            # return [dict(row) for row in rows]
+        except Exception as e:
+
+            print(f"Db error: {e}")
 
     return retrieve_chunks
