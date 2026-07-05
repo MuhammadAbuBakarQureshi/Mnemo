@@ -8,6 +8,7 @@ from backend.app.core.database import db_session_maker
 from backend.app.models.models import User
 from backend.app.schemas.user import UserCreate, UserLogin
 from backend.app.auth.jwt import create_access_token
+from backend.app.dependencies.auth import get_current_user
 
 import os
 from dotenv import load_dotenv
@@ -17,6 +18,21 @@ load_dotenv()
 ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES")) # type: ignore
 
 router = APIRouter()
+
+
+@router.get("/me")
+async def get_current_user(
+    current_user: User = Depends(get_current_user),
+):
+    try:
+        return {
+            "user_id": current_user.user_id,
+            "name": current_user.username,
+            "email": current_user.email
+        }
+    except Exception as e:
+        print(f"Get Current User Error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to fetch user") from e
 
 
 @router.post("/register")
@@ -75,8 +91,8 @@ async def login(credentials: UserLogin, response: Response, request: Request, se
             key="access_token",
             value=access_token,
             httponly=True,
-            secure=False,
-            samesite="lax",
+            secure=True,
+            samesite="none",
             max_age=ACCESS_TOKEN_EXPIRE_MINUTES
         )
 
@@ -96,3 +112,17 @@ async def login(credentials: UserLogin, response: Response, request: Request, se
         print(f"User Login Error: {e}")
         raise HTTPException(status_code=500, detail="Something went wrong while logging in")
     
+@router.post("/logout")
+async def logout(response: Response):
+    try:
+        
+        response.delete_cookie(
+            key="access_token",
+            httponly=True,
+            secure=True,
+            samesite="none",
+        )
+        return {"message": "Logged out successfully"}
+    except Exception as e:
+        print(f"Logout Error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to log out") from e
