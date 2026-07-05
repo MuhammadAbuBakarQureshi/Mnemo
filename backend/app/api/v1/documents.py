@@ -63,7 +63,6 @@ async def download_document(document_id: int, session: AsyncSession = Depends(db
         if not document:
             raise HTTPException(status_code=404, detail="Document not found")
 
-        # check the object actually exists in S3
         try:
             s3_client.head_object(Bucket=BUCKET_NAME, Key=document.file_path)
         except s3_client.exceptions.ClientError:
@@ -77,10 +76,10 @@ async def download_document(document_id: int, session: AsyncSession = Depends(db
                 "ResponseContentDisposition": f'attachment; filename="{document.filename}"',
                 "ResponseContentType": document.file_type or "application/octet-stream",
             },
-            ExpiresIn=300,  # link valid for 5 minutes
+            ExpiresIn=300,
         )
 
-        return RedirectResponse(url=presigned_url)
+        return {"url": presigned_url}  # <-- JSON, not a redirect
 
     except HTTPException:
         raise
