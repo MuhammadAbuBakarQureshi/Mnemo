@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { FileText, Trash2, Download, Loader } from "lucide-react";
+import { FileText, Trash2, Download, Loader, X } from "lucide-react";
 import apiFetch from "../../../apifetch";
 import { useToast } from "../Toast/Toast";
 import "./ProjectFiles.css";
@@ -17,8 +17,11 @@ const BASE_URL = import.meta.env.VITE_BASE_URL;
  * - projectId: currently active project's ID. Panel renders nothing if null.
  * - refreshKey: bump this (e.g. increment a counter) to force a refetch,
  *   such as right after a file finishes uploading elsewhere in the UI.
+ * - mobileOpen: on narrow viewports the panel is a slide-in drawer instead
+ *   of a permanent column — true shows it, opened via a button elsewhere.
+ * - onClose: called when the drawer's backdrop or close button is clicked.
  */
-export default function ProjectFiles({ projectId, refreshKey }) {
+export default function ProjectFiles({ projectId, refreshKey, mobileOpen = false, onClose }) {
   const [files, setFiles] = useState([]);
   const [loading, setLoading] = useState(false);
   const [deletingId, setDeletingId] = useState(null);
@@ -101,8 +104,13 @@ export default function ProjectFiles({ projectId, refreshKey }) {
         throw new Error(`Download failed (${response?.status})`);
       }
 
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
+      // Backend returns { url: <presigned S3 URL> }. Navigate to it directly
+      // instead of fetching+blob-ing it — a presigned S3 URL is cross-origin,
+      // and a plain navigation (unlike fetch/XHR) isn't subject to CORS, so
+      // no S3 bucket CORS config is needed. The URL already sets
+      // Content-Disposition: attachment, so this triggers a real download
+      // rather than navigating away from the page.
+      const { url } = await response.json();
 
       const link = document.createElement("a");
       link.href = url;
@@ -110,7 +118,6 @@ export default function ProjectFiles({ projectId, refreshKey }) {
       document.body.appendChild(link);
       link.click();
       link.remove();
-      window.URL.revokeObjectURL(url);
     } catch (err) {
       console.error("Failed to download file:", err);
       toast.error("Failed to download file");
@@ -122,8 +129,26 @@ export default function ProjectFiles({ projectId, refreshKey }) {
   if (!projectId) return null;
 
   return (
-    <aside className="project-files-panel">
-      <div className="project-files-header">Files</div>
+    <>
+      {/* Backdrop only ever visible on mobile (see CSS), closes the drawer */}
+      <div
+        className={`project-files-backdrop ${mobileOpen ? "visible" : ""}`}
+        onClick={onClose}
+        aria-hidden="true"
+      />
+
+      <aside className={`project-files-panel ${mobileOpen ? "project-files-panel-mobile-open" : ""}`}>
+        <div className="project-files-header">
+          Files
+          <button
+            type="button"
+            className="project-files-close-btn"
+            aria-label="Close files panel"
+            onClick={onClose}
+          >
+            <X size={16} strokeWidth={2.25} />
+          </button>
+        </div>
 
       {loading ? (
         <p className="project-files-empty">Loading...</p>
@@ -170,6 +195,7 @@ export default function ProjectFiles({ projectId, refreshKey }) {
           })}
         </ul>
       )}
-    </aside>
+      </aside>
+    </>
   );
 }
