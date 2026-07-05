@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Menu, User } from "lucide-react";
+import { Menu, User, Folder } from "lucide-react";
 import Sidebar from "../Components/SideBar/Sidebar";
 import ChatWindow from "../Components/Chat/ChatWindow";
 import ProjectFiles from "../Components/Files/ProjectFiles";
@@ -28,6 +28,8 @@ export default function AppPage() {
   // Bumped whenever ChatInput finishes uploading a file, so ProjectFiles
   // knows to refetch instead of only fetching once on project mount.
   const [filesRefreshKey, setFilesRefreshKey] = useState(0);
+  // On mobile, the files panel is a drawer instead of a permanent column
+  const [filesDrawerOpen, setFilesDrawerOpen] = useState(false);
   const toast = useToast();
 
   // ── :projectId + projects list -> activeProject ──────────────────────────
@@ -316,6 +318,17 @@ export default function AppPage() {
           <span className="app-main-title">
             {displayTitle}
           </span>
+
+          {activeProject && (
+            <button
+              type="button"
+              aria-label="Open files"
+              className="mobile-files-button"
+              onClick={() => setFilesDrawerOpen(true)}
+            >
+              <Folder size={18} strokeWidth={2} />
+            </button>
+          )}
         </div>
 
         <ChatWindow
@@ -330,6 +343,8 @@ export default function AppPage() {
         <ProjectFiles
           projectId={activeProject.project_id}
           refreshKey={filesRefreshKey}
+          mobileOpen={filesDrawerOpen}
+          onClose={() => setFilesDrawerOpen(false)}
         />
       )}
     </div>
