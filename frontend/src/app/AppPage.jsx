@@ -8,7 +8,7 @@ import { useToast } from "../Components/Toast/Toast";
 import apiFetch from "../../apifetch";
 import "./AppPage.css";
 
-const API_BASE = "http://localhost:8000";
+const BASE_URL = import.meta.env.VITE_BASE_URL
 
 export default function AppPage() {
   // Route params are the source of truth for which project/chat is open.
@@ -68,7 +68,7 @@ export default function AppPage() {
       setLoadingChats(true);
       try {
         const response = await apiFetch(
-          `${API_BASE}/chat/${activeProject.project_id}`,
+          `${BASE_URL}/chat/${activeProject.project_id}`,
           "GET"
         );
 
@@ -177,7 +177,7 @@ export default function AppPage() {
       if (chatSession.isFirstMessage) {
         try {
           const initResponse = await apiFetch(
-            `${API_BASE}/chat/init`,
+            `${BASE_URL}/chat/init`,
             "POST",
             {},
             JSON.stringify({
@@ -252,7 +252,7 @@ export default function AppPage() {
         };
 
         const response = await apiFetch(
-          `${API_BASE}/chat/`,
+          `${BASE_URL}/chat/`,
           "POST",
           {},
           JSON.stringify(conversationPayload)
