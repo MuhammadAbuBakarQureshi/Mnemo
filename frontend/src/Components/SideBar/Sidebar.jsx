@@ -3,8 +3,10 @@ import { Plus, Search, PanelLeftClose, PanelLeftOpen, MessageCircle, X } from "l
 import { useToast } from "../../components/Toast/Toast";
 import ProjectList from "./ProjectList";
 import NewProjectModal from "./NewProjectModal";
+import UserMenu from "./UserMenu";
 import apiFetch from "../../../apifetch";
 import "./Sidebar.css";
+
 
 const BASE_URL = import.meta.env.VITE_BASE_URL
 
@@ -26,6 +28,7 @@ export default function Sidebar({
   const [searchQuery, setSearchQuery] = useState("");
   const toast = useToast();
 
+
   // Track viewport changes to know if we should auto-close on selection
   useEffect(() => {
     const handleResize = () => {
@@ -41,16 +44,15 @@ export default function Sidebar({
         const response = await apiFetch(`${BASE_URL}/project/`, "GET");
         const data = await response.json();
 
-        if (response.ok){
-
-          setProjects(data);
-        }
-        else{
-          
-          toast.error("Error while fetching projects")
+        if (response.ok) {
+          setProjects(Array.isArray(data) ? data : []);
+        } else {
+          const msg = data?.detail || "Failed to load projects";
+          toast.error(msg);
         }
       } catch (err) {
         console.error("Failed to fetch projects:", err);
+        toast.error("Failed to load projects");
       }
     };
     fetchProjects();
@@ -266,6 +268,9 @@ export default function Sidebar({
               </div>
             )}
           </div>
+
+          {/* Account / logout */}
+          <UserMenu />
         </div>
       </aside>
 
@@ -281,6 +286,8 @@ export default function Sidebar({
           >
             <PanelLeftOpen size={18} strokeWidth={2} />
           </button>
+
+          <UserMenu collapsed />
         </div>
       )}
 
