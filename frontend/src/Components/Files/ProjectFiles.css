@@ -20,12 +20,34 @@
 
 .project-files-header {
   flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   padding: 1.25rem 1.25rem 0.75rem;
   font-size: 0.85rem;
   font-weight: 800;
   letter-spacing: 0.01em;
   color: var(--color-ink);
   border-bottom: 1px solid var(--color-border);
+}
+
+.project-files-close-btn {
+  display: none;
+  width: 26px;
+  height: 26px;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  border-radius: 999px;
+  color: var(--color-ink-soft);
+  cursor: pointer;
+  transition: background-color 150ms ease, color 150ms ease;
+}
+
+.project-files-close-btn:hover {
+  background: rgba(46, 37, 32, 0.08);
+  color: var(--color-ink);
 }
 
 .project-files-empty {
@@ -151,8 +173,70 @@
   }
 }
 
+/* Backdrop behind the mobile drawer — only ever shown below 980px */
+.project-files-backdrop {
+  display: none;
+}
+
 @media (max-width: 980px) {
   .project-files-panel {
     display: none;
+  }
+
+  .project-files-close-btn {
+    display: inline-flex;
+  }
+
+  /* Mobile drawer: slides in from the right edge of the screen. Overrides
+     the display:none above and the static-column layout entirely. */
+  .project-files-panel.project-files-panel-mobile-open {
+    display: flex;
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: min(320px, 85vw);
+    height: 100vh;
+    height: 100dvh;
+    margin: 0;
+    border-radius: 0;
+    border: none;
+    border-left: 1px solid var(--color-border);
+    z-index: 1001;
+    animation: project-files-slide-in 220ms ease-out;
+  }
+
+  .project-files-backdrop.visible {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(20, 15, 12, 0.35);
+    z-index: 1000;
+    animation: project-files-fade-in 220ms ease-out;
+  }
+
+  /* No hover on touch devices — download/delete must always be visible
+     instead of only appearing on .project-files-item:hover */
+  .project-files-download-btn,
+  .project-files-delete-btn {
+    opacity: 1;
+  }
+}
+
+@keyframes project-files-slide-in {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes project-files-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }
