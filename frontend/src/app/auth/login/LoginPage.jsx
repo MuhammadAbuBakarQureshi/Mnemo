@@ -3,6 +3,8 @@ import { ToastProvider, useToast } from "../../../components/Toast/Toast";
 import { Link, resolvePath, useNavigate } from "react-router-dom";
 import "../AuthPage.css";
 
+const BASE_URL = import.meta.env.VITE_BASE_URL
+
 export default function LoginPage() {
   const navigate = useNavigate();
   const [fields, setFields] = useState({ email: "", password: "" });
@@ -26,7 +28,7 @@ export default function LoginPage() {
     
     setLoading(true);
 
-    const response = await fetch(`http://localhost:8000/user/login`, {
+    const response = await fetch(`${BASE_URL}/user/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       credentials: "include",
