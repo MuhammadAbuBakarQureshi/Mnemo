@@ -1,16 +1,8 @@
 import "./MessageBubble.css";
 
-// Both AI and human messages can carry a `context` array of file/chunk
-// references, e.g.:
-//   AI:    [{ content, filename, similarity, page_number }, ...]
-//   Human: [{ filename, document_id, file_path, ... }, ...]  (uploaded docs)
-// Either shape renders fine here — page/score are simply omitted when not
-// present. Empty/absent context renders nothing.
 function parseContextPills(context) {
   if (!context) return [];
 
-  // Defensive: handle the case where context arrives as a JSON string
-  // instead of an already-parsed array/object.
   let items = context;
   if (typeof items === "string") {
     try {
