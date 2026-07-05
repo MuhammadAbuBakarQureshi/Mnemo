@@ -4,7 +4,7 @@ from sqlalchemy import select
 
 from backend.app.core.database import db_session_maker
 from backend.app.models.models import User
-from backend.app.auth.jwt import decode_access_token # type: ignore
+from backend.app.auth.jwt import decode_access_token 
 
 
 async def get_current_user(
