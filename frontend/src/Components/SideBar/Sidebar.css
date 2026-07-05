@@ -4,6 +4,7 @@
   /* Fixed height — never min-height — so the list scrolls inside, not the page */
   width: 300px;
   height: 100vh;
+  height: 100dvh; /* mobile browsers: account for the address bar so bottom content (UserMenu) isn't clipped */
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
@@ -442,6 +443,7 @@
     bottom: 0;
     width: min(92vw, 340px) !important;
     height: 100vh;
+    height: 100dvh;
     transform: translateX(-120%);
     box-shadow: 24px 0 80px rgba(46, 37, 32, 0.18);
     z-index: 30;
@@ -465,5 +467,11 @@
   .sidebar-toggle-btn {
     width: 36px;
     height: 36px;
+  }
+
+  /* No hover on touch devices — the three-dot project menu button must
+     always be visible instead of only appearing on .project-item:hover */
+  .project-menu-btn {
+    opacity: 1;
   }
 }
