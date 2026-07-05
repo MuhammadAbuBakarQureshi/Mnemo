@@ -24,18 +24,4 @@ createRoot(document.getElementById("root")).render(
           </BrowserRouter>
         </ToastProvider>
     </StrictMode>
-  // <StrictMode>
-  //   <AuthProvider>
-  //     <ToastProvider>
-  //       <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-  //         <Routes>
-  //           <Route path="/" element={<ProtectedRoute><AppPage /></ProtectedRoute>} />
-  //           <Route path="/login"  element={<LoginPage />} />
-  //           <Route path="/signup" element={<SignupPage />} />
-  //           <Route path="*"       element={<Navigate to="/" replace />} />
-  //         </Routes>
-  //       </BrowserRouter>
-  //     </ToastProvider>
-  //   </AuthProvider>
-  // </StrictMode>
 );
